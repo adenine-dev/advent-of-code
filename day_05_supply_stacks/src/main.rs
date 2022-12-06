@@ -16,14 +16,7 @@ fn parse_start(start: &str) -> Vec<Vec<char>> {
     stacks
 }
 
-fn move_crates(port: &mut [Vec<char>], amt: usize, start: usize, end: usize) {
-    for _ in 0..amt {
-        let x = port[start].pop().unwrap();
-        port[end].push(x);
-    }
-}
-
-fn rearrange_crates(input: &str) -> String {
+fn rearrange_crates_9000(input: &str) -> String {
     let (start, commands) = input.split_once("\n\n").unwrap();
     let mut stacks = parse_start(start);
 
@@ -33,7 +26,28 @@ fn rearrange_crates(input: &str) -> String {
             .flat_map(|s| s.parse::<usize>())
             .collect::<Vec<_>>()[..]
         else { panic!("invalid input") };
-        move_crates(&mut stacks, amt, start - 1, end - 1);
+        for _ in 0..amt {
+            let x = stacks[start - 1].pop().unwrap();
+            stacks[end - 1].push(x);
+        }
+    });
+
+    stacks.iter().map(|stack| stack.last().unwrap()).collect()
+}
+
+fn rearrange_crates_9001(input: &str) -> String {
+    let (start, commands) = input.split_once("\n\n").unwrap();
+    let mut stacks = parse_start(start);
+
+    commands.lines().for_each(|line| {
+        let [amt, start, end] = line
+            .split(' ')
+            .flat_map(|s| s.parse::<usize>())
+            .collect::<Vec<_>>()[..]
+        else { panic!("invalid input") };
+        let taken = stacks[start - 1].len() - amt;
+        let mut x = stacks[start - 1].split_off(taken);
+        stacks[end - 1].append(&mut x);
     });
 
     stacks.iter().map(|stack| stack.last().unwrap()).collect()
@@ -41,8 +55,13 @@ fn rearrange_crates(input: &str) -> String {
 
 fn main() {
     println!(
-        "top crates after moving: {}",
-        rearrange_crates(include_str!("input.txt"))
+        "top crates after moving using the CrateMover 9000™: {}",
+        rearrange_crates_9000(include_str!("input.txt"))
+    );
+
+    println!(
+        "top crates after moving using the CrateMover 9001™: {}",
+        rearrange_crates_9001(include_str!("input.txt"))
     );
 }
 
@@ -52,6 +71,14 @@ mod test {
 
     #[test]
     fn test() {
-        assert_eq!(rearrange_crates(include_str!("test.txt")), "CMZ".to_owned());
+        assert_eq!(
+            rearrange_crates_9000(include_str!("test.txt")),
+            "CMZ".to_owned()
+        );
+
+        assert_eq!(
+            rearrange_crates_9001(include_str!("test.txt")),
+            "MCD".to_owned()
+        );
     }
 }
