@@ -93,7 +93,6 @@ fn find_sizes(dir: &Directory) -> (u64, Vec<u64>) {
             Member::File(file) => file.size,
         };
     });
-    dbg!(sum);
     sizes.push(sum);
     (sum, sizes)
 }
@@ -107,10 +106,25 @@ fn count_total_directory_size(input: &str) -> u64 {
         .sum()
 }
 
+fn find_smallest_valid_directory(input: &str) -> u64 {
+    let fs = construct_filesystem(input);
+    let (total_size, sizes) = find_sizes(&fs);
+    let needed_space = 30000000 - (70000000 - total_size);
+    sizes
+        .into_iter()
+        .filter(|size| *size > needed_space)
+        .min()
+        .unwrap()
+}
+
 fn main() {
     println!(
         "total directory size of at most 100000: {}",
         count_total_directory_size(include_str!("input.txt"))
+    );
+    println!(
+        "size of smallest dir to delete: {}",
+        find_smallest_valid_directory(include_str!("input.txt"))
     );
 }
 
@@ -121,5 +135,9 @@ mod test {
     #[test]
     fn test() {
         assert_eq!(count_total_directory_size(include_str!("test.txt")), 95437);
+        assert_eq!(
+            find_smallest_valid_directory(include_str!("test.txt")),
+            24933642
+        );
     }
 }
