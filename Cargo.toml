@@ -6,4 +6,5 @@ members = [
     "day_04_camp_cleanup",
     "day_05_supply_stacks",
     "day_06_tuning_trouble",
+    "day_07_no_space_left_on_device"
 ]
