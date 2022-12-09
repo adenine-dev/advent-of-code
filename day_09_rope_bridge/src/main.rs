@@ -55,9 +55,8 @@ impl SubAssign<Point2> for Point2 {
     }
 }
 
-fn visited_with_commands(input: &str) -> u32 {
-    let mut head = Point2::default();
-    let mut tail = Point2::default();
+fn visited_with_commands(input: &str, tail_len: usize) -> u32 {
+    let mut knots = vec![Point2::default(); 1 + tail_len];
 
     input
         .lines()
@@ -73,15 +72,20 @@ fn visited_with_commands(input: &str) -> u32 {
             vec![dir; amt.parse::<usize>().unwrap()]
         })
         .map(|dir| {
-            head += dir;
-            if tail.should_move(&head) {
-                let dist = head - tail;
-                tail += Point2 {
-                    x: dist.x.signum(),
-                    y: dist.y.signum(),
-                };
+            knots[0] += dir;
+            for i in 1..knots.len() {
+                let head = knots[i - 1];
+                let tail = &mut knots[i];
+                if tail.should_move(&head) {
+                    let dist = head - *tail;
+                    *tail += Point2 {
+                        x: dist.x.signum(),
+                        y: dist.y.signum(),
+                    };
+                }
             }
-            tail
+
+            *knots.last().unwrap()
         })
         .collect::<HashSet<_>>()
         .len() as u32
@@ -89,8 +93,12 @@ fn visited_with_commands(input: &str) -> u32 {
 
 fn main() {
     println!(
-        "number of positions visited: {}",
-        visited_with_commands(include_str!("input.txt"))
+        "number of positions visited (tail len 1): {}",
+        visited_with_commands(include_str!("input.txt"), 1)
+    );
+    println!(
+        "number of positions visited (tail len 9): {}",
+        visited_with_commands(include_str!("input.txt"), 9)
     );
 }
 
@@ -100,6 +108,7 @@ mod test {
 
     #[test]
     fn test() {
-        assert_eq!(visited_with_commands(include_str!("test.txt")), 13);
+        assert_eq!(visited_with_commands(include_str!("test.txt"), 1), 13);
+        assert_eq!(visited_with_commands(include_str!("test.txt"), 9), 1);
     }
 }
