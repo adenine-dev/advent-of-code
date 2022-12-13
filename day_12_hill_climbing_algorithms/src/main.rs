@@ -23,11 +23,10 @@ impl PartialOrd for Node {
     }
 }
 
-fn climb_hill(input: &str) -> u32 {
+fn build_map(input: &str) -> (Vec<i8>, usize, usize, usize) {
     const INVALID: usize = usize::MAX;
 
     let width = input.lines().next().unwrap().len();
-    // let height = input.lines().count();
 
     let mut start = INVALID;
     let mut end = INVALID;
@@ -53,6 +52,10 @@ fn climb_hill(input: &str) -> u32 {
         })
         .collect::<Vec<_>>();
 
+    (map, start, end, width)
+}
+
+fn dijkstra_go_spin(map: &[i8], start: usize, end: usize, width: usize) -> u32 {
     let mut steps = vec![u32::MAX; map.len()];
     let mut visited = vec![];
     let mut unvisited = BinaryHeap::from(vec![Node {
@@ -78,7 +81,7 @@ fn climb_hill(input: &str) -> u32 {
                 // for some reason there's not a binary heap contains fn :/ so this isn't super efficient
                 // not like it is anyway
                 // but still
-                
+
                 unvisited.push(Node {
                     steps: node.steps + 1,
                     idx: nidx,
@@ -92,10 +95,34 @@ fn climb_hill(input: &str) -> u32 {
     steps[end]
 }
 
+fn climb_hill(input: &str) -> u32 {
+    let (map, start, end, width) = build_map(input);
+    dijkstra_go_spin(&map, start, end, width)
+}
+
+fn hill_climb(input: &str) -> u32 {
+    let (map, _, end, width) = build_map(input);
+    map.iter()
+        .enumerate()
+        .filter_map(|(idx, height)| {
+            if *height == 0 {
+                Some(dijkstra_go_spin(&map, idx, end, width))
+            } else {
+                None
+            }
+        })
+        .min()
+        .unwrap()
+}
+
 fn main() {
     println!(
         "minimum steps to climb hill: {}",
         climb_hill(include_str!("input.txt"))
+    );
+    println!(
+        "minimum steps to hill climb: {}",
+        hill_climb(include_str!("input.txt"))
     );
 }
 
@@ -106,5 +133,6 @@ mod test {
     #[test]
     fn test() {
         assert_eq!(climb_hill(include_str!("test.txt")), 31);
+        assert_eq!(hill_climb(include_str!("test.txt")), 29);
     }
 }
