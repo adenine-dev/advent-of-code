@@ -41,3 +41,7 @@ version = "0.1.0"
 [[package]]
 name = "day_10_cathode_ray_tube"
 version = "0.1.0"
+
+[[package]]
+name = "day_11_monkey_in_the_middle"
+version = "0.1.0"
