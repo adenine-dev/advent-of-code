@@ -45,3 +45,7 @@ version = "0.1.0"
 [[package]]
 name = "day_11_monkey_in_the_middle"
 version = "0.1.0"
+
+[[package]]
+name = "day_12_hill_climbing_algorithms"
+version = "0.1.0"

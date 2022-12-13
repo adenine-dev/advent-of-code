@@ -11,5 +11,5 @@ members = [
     "day_09_rope_bridge",
     "day_10_cathode_ray_tube",
     "day_11_monkey_in_the_middle",
-    
+    "day_12_hill_climbing_algorithms",
 ]
