@@ -1,6 +1,6 @@
 #![feature(let_chains)]
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 enum Packet {
     List(Vec<Packet>),
     Integer(i32),
@@ -83,11 +83,31 @@ fn in_order_distress_signals(input: &str) -> u32 {
         .sum::<usize>() as u32
 }
 
+fn decoder_key(input: &str) -> u32 {
+    let m1 = Packet::List(vec![Packet::List(vec![Packet::Integer(2)])]);
+    let m2 = Packet::List(vec![Packet::List(vec![Packet::Integer(6)])]);
+
+    let packets = parse_packets(input);
+    let mut packets = packets.iter().flatten().collect::<Vec<_>>();
+    packets.push(&m1);
+    packets.push(&m2);
+
+    packets.sort_by(|p1, p2| match compare_packets(p1, p2) {
+        Some(true) => std::cmp::Ordering::Less,
+        Some(false) => std::cmp::Ordering::Greater,
+        None => std::cmp::Ordering::Equal,
+    });
+
+    ((packets.iter().position(|x| **x == m1).unwrap() + 1)
+        * (packets.iter().position(|x| **x == m2).unwrap() + 1)) as u32
+}
+
 fn main() {
     println!(
         "sum of in order distress signals: {}",
         in_order_distress_signals(include_str!("input.txt"))
     );
+    println!("decoder key is: {}", decoder_key(include_str!("input.txt")));
 }
 
 #[cfg(test)]
@@ -97,5 +117,6 @@ mod test {
     #[test]
     fn test() {
         assert_eq!(in_order_distress_signals(include_str!("test.txt")), 13);
+        assert_eq!(decoder_key(include_str!("test.txt")), 140);
     }
 }
