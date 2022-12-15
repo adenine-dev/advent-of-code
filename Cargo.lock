@@ -53,3 +53,7 @@ version = "0.1.0"
 [[package]]
 name = "day_13_distress_signal"
 version = "0.1.0"
+
+[[package]]
+name = "day_14_regolith_reservoir"
+version = "0.1.0"
