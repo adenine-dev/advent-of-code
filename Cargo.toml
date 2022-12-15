@@ -13,5 +13,6 @@ members = [
     "day_11_monkey_in_the_middle",
     "day_12_hill_climbing_algorithms",
     "day_13_distress_signal",
-    "day_14_regolith_reservoir"
+    "day_14_regolith_reservoir",
+    "day_15_beacon_exclusion_zone",
 ]
